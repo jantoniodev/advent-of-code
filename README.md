@@ -1,4 +1,4 @@
-# advent-of-code
+# Advent of code
 
 Aquí publico las soluciones al reto [advent of code](https://adventofcode.com/).
 
