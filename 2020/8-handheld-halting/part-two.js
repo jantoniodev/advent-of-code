@@ -3,7 +3,7 @@ const readline = require('readline')
 
 const fs = require('fs')
 
-const INSTRUCTIONS_FILE = '/home/plafhz/Documents/programming/advent-of-code/2020/8-handheld-halting/input_test.txt'
+const INSTRUCTIONS_FILE = 'input.txt'
 
 class GameConsole {
     constructor(program) {
@@ -26,14 +26,14 @@ class GameConsole {
 
     start() {
         while (!this.halt) {
-            if (this.instructionPointer >= this.program.length - 1) {
+            if (this.instructionPointer >= this.program.length) {
                 break
             }
 
             this.execute()
         }
 
-        console.log(`Program finished ${this.halt ? 'with errors' : 'correctly'}.`)
+        return [!this.halt, this.accumulator]
     }
 
     nop() {
@@ -51,9 +51,6 @@ class GameConsole {
 
     execute() {
         const instruction = this.program[this.instructionPointer]
-
-        console.log(`IP: ${this.instructionPointer}, ACC: ${this.accumulator} -> ${instruction.operation} ${instruction.argument}`)
-
         this.instructionsDecoder[instruction.operation](instruction.argument)
     }
 
@@ -87,6 +84,52 @@ readInterface.on('line', (line) => {
 })
 
 readInterface.on('close', () => {
-    const a = new GameConsole(originalProgram)
-    a.start()
+    // const a = new GameConsole(originalProgram)
+    // a.start()
+
+    const allPossibilities = generateAllPossibilities(originalProgram)
+
+    const programs = allPossibilities.map(program => new GameConsole(program))
+
+    const executionResults = programs.map((program, index, programs) => {
+        console.log(`Ejecutando programa ${index + 1} de ${programs.length}`)
+        const [result, accumulator] = program.start()
+        return {
+            index,
+            result,
+            accumulator
+        }
+    })
+
+    const successExecutions = executionResults.reduce((prev, current) => {
+        if(current.result){
+            prev.push(current)
+        }
+        return prev
+    }, [])
+
+    console.log(successExecutions)
 })
+
+const generateAllPossibilities = (originalProgram) => {
+    const toChangeInstructions = originalProgram.reduce((prev, current, index) => {
+        if(["jmp", "nop"].includes(current.operation)) {
+            prev.push(index)
+        }
+        return prev
+    }, [])
+
+    let changedPrograms = toChangeInstructions.map(index => {
+        const program = getProgramClone(originalProgram)
+        program[index].operation = program[index].operation === 'jmp' ? 'nop' : 'jmp'
+        return program
+    })
+
+    changedPrograms.unshift(originalProgram)
+
+    return changedPrograms
+}
+
+const getProgramClone = (program) => {
+    return [...program.map(instruction => ({...instruction}))]
+}
