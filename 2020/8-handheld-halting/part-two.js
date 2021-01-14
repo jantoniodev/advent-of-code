@@ -13,6 +13,10 @@ class GameConsole {
         this.instructionPointer = 0
         this.history = [0]
 
+        this.nop = this.nop.bind(this)
+        this.acc = this.acc.bind(this)
+        this.jmp = this.jmp.bind(this)
+
         this.instructionsDecoder = {
             'nop': this.nop,
             'acc': this.acc,
@@ -33,20 +37,16 @@ class GameConsole {
     }
 
     nop() {
-        this.instructionPointer += 1
-        console.log(this)
-        this.history.push(this.instructionPointer)
+        this.next()
     }
 
     acc(argument) {
         this.accumulator += argument
-        this.instructionPointer += 1
-        this.history.push(this.instructionPointer)
+        this.next()
     }
 
     jmp(argument) {
-        this.instructionPointer += argument
-        this.history.push(this.instructionPointer)
+        this.next(argument)
     }
 
     execute() {
@@ -55,6 +55,16 @@ class GameConsole {
         console.log(`IP: ${this.instructionPointer}, ACC: ${this.accumulator} -> ${instruction.operation} ${instruction.argument}`)
 
         this.instructionsDecoder[instruction.operation](instruction.argument)
+    }
+
+    next(step) {
+        this.instructionPointer += step || 1
+
+        if( this.history.includes(this.instructionPointer) ) {
+            this.halt = true
+        }
+
+        this.history.push(this.instructionPointer)
     }
 }
 
