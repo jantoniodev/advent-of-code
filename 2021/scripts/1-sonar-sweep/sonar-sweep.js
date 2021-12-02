@@ -13,9 +13,13 @@ async function main() {
 
   await sonarSweep.deployed();
 
-  var result = await sonarSweep.calculateIncreases(await readInput());
+  const data = await readInput();
 
-  console.log("Result:", result.toString());
+  var resultPartOne = await sonarSweep.calculateIncreases(data);
+  var resultPartTwo = await sonarSweep.calculateIncreasesWithSlidingWindow(data);
+
+  console.log("Result part one:", resultPartOne.toString());
+  console.log("Result part two:", resultPartTwo.toString());
 }
 
 // We recommend this pattern to be able to use async/await everywhere

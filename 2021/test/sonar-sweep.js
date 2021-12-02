@@ -18,4 +18,18 @@ describe("SonarSweep", function () {
         expect(result).to.equal(7)
     })
 
+    it('Should calculate increased values with a sliding window', async () => {
+        // arrange
+        const SonarSweep = await ethers.getContractFactory("SonarSweep");
+        const sonarSweep = await SonarSweep.deploy();
+        await sonarSweep.deployed();
+        
+        const measurements = [ 199, 200, 208, 210, 200, 207, 240, 269, 260, 263 ]
+        
+        // act
+        const result = await sonarSweep.calculateIncreasesWithSlidingWindow(measurements)
+
+        // assert
+        expect(result).to.equal(5)
+    })
 });
