@@ -10,14 +10,17 @@ async function readInput() {
 async function main() {
   const Dive = await hre.ethers.getContractFactory("Dive");
   const dive = await Dive.deploy();
-
   await dive.deployed();
+
+  const DiveAim = await hre.ethers.getContractFactory("Dive");
+  const diveAim = await DiveAim.deploy();
+  await diveAim.deployed();
 
   const data = await readInput();
 
   const instructionsMapping = {
       "forward": 0,
-      "up": 1,  
+      "up": 1,
       "down": 2,
   }
 
@@ -30,12 +33,17 @@ async function main() {
       if(isNaN(instruction[0]) || isNaN(instruction[1])) return
 
       await dive.move(instruction[0], instruction[1])
+      await diveAim.moveAim(instruction[0], instruction[1])
   })
 
   const depth = await dive.depth()
   const horizontal = await dive.horizontal()
 
+  const depthAim = await diveAim.depth()
+  const horizontalAim = await diveAim.horizontal()
+
   console.log(`Result part one: depth ${depth} horizontal ${horizontal} - result ${depth * horizontal}`)
+  console.log(`Result part two: depth ${depthAim} horizontal ${horizontalAim} - result ${depthAim * horizontalAim}`)
 }
 
 // We recommend this pattern to be able to use async/await everywhere

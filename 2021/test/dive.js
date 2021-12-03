@@ -23,4 +23,25 @@ describe("Dive", function () {
         // assert
         expect(depth * horizontal).to.equal(150)
     })
+
+    it('Should calculate the horizontal and depth given a list of instructions but considering the aim', async () => {
+        // arrange
+        const Dive = await ethers.getContractFactory("Dive");
+        const dive = await Dive.deploy();
+        await dive.deployed();
+
+        await dive.moveAim(0, 5)
+        await dive.moveAim(2, 5)
+        await dive.moveAim(0, 8)
+        await dive.moveAim(1, 3)
+        await dive.moveAim(2, 8)
+        await dive.moveAim(0, 2)
+
+        // act
+        const depth = await dive.depth()
+        const horizontal = await dive.horizontal()
+
+        // assert
+        expect(depth * horizontal).to.equal(900)
+    })
 });
