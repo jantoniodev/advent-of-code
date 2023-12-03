@@ -1,4 +1,4 @@
-import { calculateCalibrationValuesPartOne, calculateCalibrationValuesPartTwo } from './trebuchet'
+import { Trebuchet } from '.'
 
 describe('1-trebuchet', () => {
     it('Should calculate calibration values', () => {
@@ -9,9 +9,10 @@ describe('1-trebuchet', () => {
             a1b2c3d4e5f
             treb7uchet
         `
+        const trebuchet = new Trebuchet()
 
         // Act
-        const result = calculateCalibrationValuesPartOne(input)
+        const result = trebuchet.solveProblemOne(input)
 
         // Assert
         expect(result).toBe(142)
@@ -28,9 +29,10 @@ describe('1-trebuchet', () => {
             zoneight234
             7pqrstsixteen
         `
+        const trebuchet = new Trebuchet()
 
         // Act
-        const result = calculateCalibrationValuesPartTwo(input)
+        const result = trebuchet.solveProblemTwo(input)
 
         // Assert
         expect(result).toBe(281)

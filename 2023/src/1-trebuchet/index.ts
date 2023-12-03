@@ -1,18 +1,70 @@
-import fs from 'fs/promises'
+import { AdventFramework } from '../adventFramework'
+import path from 'path'
 
-import { calculateCalibrationValuesPartOne, calculateCalibrationValuesPartTwo } from './trebuchet'
+export class Trebuchet extends AdventFramework {
+    constructor() {
+        super('Trebuchet', path.join(__dirname, 'input.txt'))
+    }
 
-const readInput = async () => {
-    const buffer = await fs.readFile('./input.txt')
-    return buffer.toString()
+    solveProblemOne(input: string): string | number {
+        const calibrationInputs = input.trim().split('\n')
+
+        const calibrationValues = calibrationInputs.map(calibrationInput => {
+            const numbers = calibrationInput
+                .split('')
+                .filter(char => !isNaN(parseInt(char)))
+
+            if (numbers.length === 0) {
+                return 0
+            }
+
+            return parseInt(numbers[0] + numbers[numbers.length - 1])
+        })
+
+        const result = calibrationValues.reduce((result, current) => result + current, 0)
+
+        return result
+    }
+
+    solveProblemTwo(input: string): string | number {
+        const calibrationInputs = input.trim().split('\n')
+
+        const numberMap: { [key: string]: string } = {
+            'one': '1',
+            'two': '2',
+            'three': '3',
+            'four': '4',
+            'five': '5',
+            'six': '6',
+            'seven': '7',
+            'eight': '8',
+            'nine': '9'
+        }
+
+        const numbersWord = Object.keys(numberMap)
+
+        const calibrationValues = calibrationInputs.map(calibrationInput => {
+            const numbers = calibrationInput
+                .split('')
+                .reduce((prev, current, index, array) => {
+                    if (!isNaN(parseInt(current)))
+                        return [...prev, current]
+
+                    for (const word of numbersWord) {
+                        const isWordNumber = array.slice(index, index + word.length).join('') === word
+                        if (isWordNumber) {
+                            return [...prev, numberMap[word]]
+                        }
+                    }
+
+                    return prev
+                }, [] as string[])
+
+            return parseInt(numbers[0] + numbers[numbers.length - 1])
+        })
+
+        const result = calibrationValues.reduce((result, current) => result + current, 0)
+
+        return result
+    }
 }
-
-(async () => {
-    const input = await readInput()
-
-    const resultPartOne = calculateCalibrationValuesPartOne(input)
-    console.log(`Part one: ${resultPartOne}`)
-
-    const resultPartTwo = calculateCalibrationValuesPartTwo(input)
-    console.log(`Part two: ${resultPartTwo}`)
-})()
