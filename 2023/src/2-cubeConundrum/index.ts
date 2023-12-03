@@ -47,6 +47,41 @@ export class CubeConundrum extends AdventFramework {
     }
 
     solveProblemTwo(input: string): string | number {
-        throw new Error('Method not implemented.');
+        const inputLines = input.trim().split('\n')
+
+        const games = inputLines.map(line => {
+            const gameSetsSection = line.split(':')[1]
+            const sets = gameSetsSection.split(';')
+            const setCounts = sets.map(set => {
+                const matches = [...set.matchAll(/((?<blueCount>\d+) blue)|((?<redCount>\d+) red)|((?<greenCount>\d+) green)/g)]
+                
+                const counts = matches.reduce((result, match) => {
+                    const blueCount = match.groups?.blueCount
+                    const redCount = match.groups?.redCount
+                    const greenCount = match.groups?.greenCount
+
+                    return {
+                        green: greenCount ? parseInt(greenCount) : result.green,
+                        red: redCount ? parseInt(redCount) : result.red,
+                        blue: blueCount ? parseInt(blueCount) : result.blue
+                    }
+                    
+                }, {red: 0, green: 0, blue: 0})
+
+                return counts
+            })
+
+            const maxCounts = setCounts.reduce((result, counts) => {
+                return {
+                    red: counts.red > result.red ? counts.red : result.red,
+                    green: counts.green > result.green ? counts.green : result.green,
+                    blue: counts.blue > result.blue ? counts.blue : result.blue,
+                }
+            }, { red: 0, green: 0, blue: 0 })
+
+            return maxCounts.red * maxCounts.green * maxCounts.blue
+        })
+
+        return games.reduce((result, current) => result + current, 0)
     }
 }
