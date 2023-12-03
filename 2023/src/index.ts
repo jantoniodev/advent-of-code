@@ -1,8 +1,9 @@
 import { select } from '@inquirer/prompts'
 
+import { AdventFramework } from './adventFramework'
 import { Trebuchet } from './1-trebuchet'
 import { CubeConundrum } from './2-cubeConundrum'
-import { AdventFramework } from './adventFramework'
+import { GearRatios } from './3-gearRatios'
 
 const showMenu = async () => {
     const selectedApp: AdventFramework = await select<AdventFramework>({
@@ -10,6 +11,7 @@ const showMenu = async () => {
         choices: [
             { name: 'day 1 - trebuchet', value: new Trebuchet() },
             { name: 'day 2 - cube conundrum', value: new CubeConundrum()},
+            { name: 'day 2 - gear ratios', value: new GearRatios()},
         ]
     })
 
