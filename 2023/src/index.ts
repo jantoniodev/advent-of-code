@@ -11,7 +11,7 @@ const showMenu = async () => {
         choices: [
             { name: 'day 1 - trebuchet', value: new Trebuchet() },
             { name: 'day 2 - cube conundrum', value: new CubeConundrum()},
-            { name: 'day 2 - gear ratios', value: new GearRatios()},
+            { name: 'day 3 - gear ratios', value: new GearRatios()},
         ]
     })
 

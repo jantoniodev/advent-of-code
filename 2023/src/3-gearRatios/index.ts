@@ -13,6 +13,10 @@ interface Position {
     neighbors: Coord[]
 }
 
+interface AsteriskGraph {
+    [asteriskPosition: string]: Position[]
+}
+
 export class GearRatios extends AdventFramework {
     constructor() {
         super('Gear ratios', path.join(__dirname, 'input.txt'))
@@ -46,11 +50,8 @@ export class GearRatios extends AdventFramework {
         return !!char.match(/[^0-9\.\s]/)
     }
 
-    solveProblemOne(input: string): string | number {
-        const inputLines = input.trim().split('\n')
-
-        // Get all number coordinates
-        const numberPositions = inputLines.reduce((result, current, row) => {
+    private getNumberCoordinates(inputLines: string[]) {
+        return inputLines.reduce((result, current, row) => {
             const matchs = [...current.trim().matchAll(/\d+/g)]
             const positions = matchs.map(match => {
                 const number = match[0]
@@ -70,11 +71,22 @@ export class GearRatios extends AdventFramework {
             })
             return [...result, ...positions]
         }, [] as Position[])
+    }
 
-        // Create a matrix to access easily to each position
-        const matrix = inputLines.map(row => {
+    private getMatrix(inputLines: string[]) {
+        return inputLines.map(row => {
             return row.trim().split('')
         })
+    }
+
+    solveProblemOne(input: string): string | number {
+        const inputLines = input.trim().split('\n')
+
+        // Get all number coordinates
+        const numberPositions = this.getNumberCoordinates(inputLines)
+
+        // Create a matrix to access easily to each position
+        const matrix = this.getMatrix(inputLines)
 
         const validPositions = numberPositions.filter(position => {
             return position.neighbors.some(neighbor => {
@@ -89,7 +101,35 @@ export class GearRatios extends AdventFramework {
     }
 
     solveProblemTwo(input: string): string | number {
-        throw new Error('Method not implemented.');
+        const inputLines = input.trim().split('\n')
+
+        // Get all number coordinates
+        const numberPositions = this.getNumberCoordinates(inputLines)
+
+        // Create a matrix to access easily to each position
+        const matrix = this.getMatrix(inputLines)
+
+        let asteriskGraph: AsteriskGraph = {}
+
+        for(let numberPosition of numberPositions) {
+            const asteriskNeighbords = numberPosition.neighbors.filter(neighbor => {
+                const char = matrix[neighbor.y]?.[neighbor.x] || '.'
+                return char === '*'
+            })
+
+            for(let asteriskNeighbord of asteriskNeighbords) {
+                const neighbordKey = `${asteriskNeighbord.x},${asteriskNeighbord.y}`
+                asteriskGraph = {
+                    ...asteriskGraph,
+                    [neighbordKey]: [...(asteriskGraph[neighbordKey] || []), numberPosition]
+                }
+            }
+        }
+
+        return Object.values(asteriskGraph)
+            .filter(positions => positions.length === 2)
+            .map(positions => positions[0].value * positions[1].value)
+            .reduce((result, position) => result + position)
     }
     
 }
